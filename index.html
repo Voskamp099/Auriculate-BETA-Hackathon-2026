@@ -19,7 +19,7 @@
       --text-mid: rgba(255,255,255,0.6);
       --text-hi: rgba(255,255,255,0.88);
       --font: 'DM Mono', 'SF Mono', 'Fira Mono', monospace;
-      --font-display: 'DM Serif Display', serif;
+      --font-ui: "PingFang SC", "SF Pro Text", -apple-system, "Helvetica Neue", sans-serif;
     }
 
     body, html {
@@ -30,6 +30,21 @@
       -webkit-font-smoothing: antialiased;
       overflow-x: auto;
       overflow-y: hidden;
+    }
+
+    .container {
+        position: relative;
+        width: 500px;
+        height: 300px;
+        background-color: black;
+    }
+
+    .overlay-image {
+        position: absolute;
+        top: 50px;
+        left: 50px;
+        width: 200px;
+        filter: invert(100%);
     }
 
     /* ─────────────────────────────
@@ -196,20 +211,21 @@
     }
     #vol-lock-tag.show { display: block; }
 
-    /* ── Right panel: legend + scene switcher ── */
+    /* ── Right panel ── */
     #right-panel {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       height: 80vh;
       width: 160px;
       min-width: 160px;
       flex-shrink: 0;
       margin-left: 18px;
       overflow: visible;
+      justify-content: flex-start;
     }
 
-    /* Gesture legend card */
+    /* Gesture legend card — fills remaining space */
     #legend-card {
       flex: 1;
       background: var(--panel-bg);
@@ -267,6 +283,7 @@
       font-weight: 500;
       color: rgba(255,255,255,0.85);
       letter-spacing: 0.03em;
+      transition: color 0.3s;
     }
     .g-sub {
       font-size: 10px;
@@ -279,7 +296,7 @@
       line-height: 1.8;
       color: var(--text-dim);
       border-top: 1px solid rgba(255,255,255,0.05);
-      padding-top: 12px;
+      padding-top: 10px;
     }
 
     /* Scene switcher card */
@@ -433,6 +450,32 @@
     .scene-btn .scene-emoji { font-size: 13px; }
 
     /* ─────────────────────────────
+       CUSTOM OPEN BUTTON
+    ───────────────────────────── */
+    #custom-open-btn {
+      background: rgba(130,255,160,0.06);
+      border: 1px solid rgba(130,255,160,0.2);
+      color: rgba(130,255,160,0.72);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-family: var(--font);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.22s;
+      width: 100%;
+      text-align: left;
+      backdrop-filter: blur(20px);
+      margin-top: auto;
+    }
+    #custom-open-btn:hover {
+      background: rgba(130,255,160,0.13);
+      border-color: rgba(130,255,160,0.45);
+      color: rgba(130,255,160,1);
+    }
+
+    /* ─────────────────────────────
        TUTORIAL OVERLAY
     ───────────────────────────── */
     #tutorial-overlay {
@@ -532,6 +575,187 @@
       animation: spin 0.85s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─────────────────────────────
+       CUSTOM MAPPING PANEL
+    ───────────────────────────── */
+    #custom-overlay {
+      position: fixed; inset: 0; z-index: 45;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(7,7,15,0.88);
+      backdrop-filter: blur(18px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.28s;
+    }
+    #custom-overlay.show { opacity: 1; pointer-events: all; }
+
+    .custom-box {
+      background: rgba(13,13,23,0.98);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 18px;
+      padding: 28px;
+      width: 340px; max-width: 92%;
+      position: relative;
+    }
+    .custom-box-title {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 500;
+      margin: 0 0 16px;
+    }
+
+    #custom-search {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: white;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 400;
+      padding: 10px 14px;
+      letter-spacing: 0.01em;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #custom-search:focus { border-color: rgba(130,255,160,0.4); }
+    #custom-search::placeholder { color: var(--text-dim); }
+
+    #custom-results {
+      margin-top: 10px;
+      display: flex; flex-direction: column;
+      gap: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+      padding-right: 2px;
+    }
+    #custom-results::-webkit-scrollbar { width: 4px; }
+    #custom-results::-webkit-scrollbar-track { background: transparent; }
+    #custom-results::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+    .sound-group-label {
+      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--text-dim); font-weight: 500; font-family: var(--font-ui);
+      padding: 8px 4px 4px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: 2px;
+    }
+    .sound-group-label:first-child { border-top: none; margin-top: 0; padding-top: 2px; }
+    .sound-result-item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 9px 12px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .sound-result-item:hover { background: rgba(255,255,255,0.07); }
+    .sound-result-item.selected {
+      border-color: rgba(130,255,160,0.45);
+      background: rgba(130,255,160,0.07);
+    }
+    .sound-result-label {
+      font-size: 13px; color: rgba(255,255,255,0.88);
+      font-weight: 500; font-family: var(--font-ui); letter-spacing: 0;
+    }
+    .sound-result-sub {
+      font-size: 11px; color: var(--text-dim);
+      font-weight: 400; font-family: var(--font-ui); margin-top: 1px;
+    }
+    .sound-preview-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text-dim);
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s; flex-shrink: 0;
+    }
+    .sound-preview-btn:hover { color: white; border-color: rgba(255,255,255,0.3); }
+    .sound-preview-btn.playing {
+      color: rgba(130,255,160,0.9);
+      border-color: rgba(130,255,160,0.4);
+    }
+
+    #custom-empty {
+      text-align: center; color: var(--text-dim);
+      font-size: 13px; font-weight: 400; font-family: var(--font-ui);
+      padding: 28px 0;
+    }
+
+    .custom-section-label {
+      font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--text-dim); font-weight: 500; font-family: var(--font-ui);
+      margin: 16px 0 10px;
+    }
+
+    #custom-gesture-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gesture-pick-btn {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 8px 11px;
+      cursor: pointer;
+      font-size: 19px;
+      transition: all 0.18s; gap: 3px;
+    }
+    .gesture-pick-btn span {
+      font-size: 11px; color: var(--text-dim);
+      font-weight: 500; font-family: var(--font-ui); letter-spacing: 0;
+    }
+    .gesture-pick-btn:hover { background: rgba(255,255,255,0.08); }
+    .gesture-pick-btn.selected {
+      border-color: rgba(130,255,160,0.5);
+      background: rgba(130,255,160,0.09);
+    }
+
+    #custom-actions {
+      display: flex; gap: 8px;
+      margin-top: 18px; justify-content: flex-end;
+    }
+    #custom-cancel-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-dim);
+      padding: 9px 20px; border-radius: 6px;
+      font-family: var(--font-ui); font-size: 13px;
+      font-weight: 500; letter-spacing: 0;
+      cursor: pointer; transition: all 0.2s;
+    }
+    #custom-cancel-btn:hover { color: white; border-color: rgba(255,255,255,0.28); }
+    #custom-save-btn {
+      background: rgba(130,255,160,0.12);
+      border: 1px solid rgba(130,255,160,0.38);
+      color: rgba(130,255,160,0.92);
+      padding: 9px 20px; border-radius: 6px;
+      font-family: var(--font-ui); font-size: 13px;
+      font-weight: 500; letter-spacing: 0;
+      cursor: pointer; transition: all 0.2s;
+    }
+    #custom-save-btn:hover { background: rgba(130,255,160,0.22); }
+    #custom-save-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    /* ── Gesture reset button ── */
+    .g-reset-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 0 0 0 4px;
+      margin-left: auto;
+      line-height: 1;
+      transition: color 0.18s;
+      flex-shrink: 0;
+    }
+    .g-reset-btn:hover { color: rgba(255,120,120,0.85); }
   </style>
 </head>
 <body>
@@ -543,21 +767,23 @@
 <div id="intro-screen">
   <div class="intro-ambient"></div>
 
-    <img 
-    src="logo.png" 
+  <!-- Logo -->
+  <img
+    src="logo.png"
     alt="Auriculate"
     style="
       width: clamp(160px, 22vw, 280px);
       opacity: 0.92;
-      position: relative; 
+      position: relative;
       z-index: 100;
       mix-blend-mode: screen
     "
   />
-  
+
   <h1 class="intro-title">In the capital lived a master of <em>vocal mimicry</em>.</h1>
   <button id="start-btn" onclick="handleStart()">Start</button>
 </div>
+
 
 <!-- ══════════ MAIN APP ══════════ -->
 <div id="app">
@@ -585,8 +811,17 @@
       </div>
     </div>
 
-    <!-- RIGHT: gesture legend + scene switcher -->
+    <!-- RIGHT: layer pill → gesture legend → custom btn -->
     <div id="right-panel">
+
+      <!-- 1. LAYER pill (顶部) -->
+      <div id="layer-pill" data-layer="ambience">
+        <div id="layer-pill-label">LAYER</div>
+        <div id="layer-pill-name">Ambience</div>
+        <div id="layer-pill-hint">▲ Both 👍 → SFX</div>
+      </div>
+
+      <!-- 2. Gesture legend (中部，紧凑) -->
       <div id="legend-card">
         <div id="legend-title">
           <span id="legend-layer-label">Gestures · Ambience</span>
@@ -594,35 +829,29 @@
         <div id="legend">
           <!-- AMBIENCE gestures -->
           <div id="legend-ambience">
-            <div class="g-row"><div class="g-emoji">☝️</div><div class="g-info"><div class="g-name">Wind</div><div class="g-sub">Index</div></div></div>
-            <div class="g-row"><div class="g-emoji">✌️</div><div class="g-info"><div class="g-name">Rain</div><div class="g-sub">Peace</div></div></div>
-            <div class="g-row"><div class="g-emoji">🤟</div><div class="g-info"><div class="g-name">Thunder</div><div class="g-sub">Three</div></div></div>
-            <div class="g-row"><div class="g-emoji">🤙</div><div class="g-info"><div class="g-name">Birds</div><div class="g-sub">Pinky</div></div></div>
-            <div class="g-row"><div class="g-emoji">✊</div><div class="g-info"><div class="g-name">Silence</div><div class="g-sub">Fist</div></div></div>
+            <div class="g-row"><div class="g-emoji">☝️</div><div class="g-info"><div class="g-name" id="lbl-index_up">Wind</div><div class="g-sub">Index</div></div></div>
+            <div class="g-row"><div class="g-emoji">✌️</div><div class="g-info"><div class="g-name" id="lbl-peace">Rain</div><div class="g-sub">Peace</div></div></div>
+            <div class="g-row"><div class="g-emoji">🤟</div><div class="g-info"><div class="g-name" id="lbl-three">Thunder</div><div class="g-sub">Three</div></div></div>
+            <div class="g-row"><div class="g-emoji">🤙</div><div class="g-info"><div class="g-name" id="lbl-pinky">Birds</div><div class="g-sub">Pinky</div></div></div>
+            <div class="g-row"><div class="g-emoji">✊</div><div class="g-info"><div class="g-name" id="lbl-fist">Silence</div><div class="g-sub">Fist</div></div></div>
           </div>
           <!-- SFX gestures (hidden by default) -->
           <div id="legend-sfx" style="display:none">
-            <div class="g-row"><div class="g-emoji">👌</div><div class="g-info"><div class="g-name">Dog</div><div class="g-sub">OK</div></div></div>
-            <div class="g-row"><div class="g-emoji">☝️</div><div class="g-info"><div class="g-name">Guzhen</div><div class="g-sub">Index</div></div></div>
-            <div class="g-row"><div class="g-emoji">✌️</div><div class="g-info"><div class="g-name">Footsteps</div><div class="g-sub">Peace</div></div></div>
-            <div class="g-row"><div class="g-emoji">🤟</div><div class="g-info"><div class="g-name">Door knock</div><div class="g-sub">Three</div></div></div>
-            <div class="g-row"><div class="g-emoji">✊</div><div class="g-info"><div class="g-name">Stop SFX</div><div class="g-sub">Fist</div></div></div>
+            <div class="g-row"><div class="g-emoji">👌</div><div class="g-info"><div class="g-name" id="lbl-sfx-ok">Dog</div><div class="g-sub">OK</div></div></div>
+            <div class="g-row"><div class="g-emoji">☝️</div><div class="g-info"><div class="g-name" id="lbl-sfx-index_up">Guzhen</div><div class="g-sub">Index</div></div></div>
+            <div class="g-row"><div class="g-emoji">✌️</div><div class="g-info"><div class="g-name" id="lbl-sfx-peace">Footsteps</div><div class="g-sub">Peace</div></div></div>
+            <div class="g-row"><div class="g-emoji">🤟</div><div class="g-info"><div class="g-name" id="lbl-sfx-three">Door knock</div><div class="g-sub">Three</div></div></div>
+            <div class="g-row"><div class="g-emoji">✊</div><div class="g-info"><div class="g-name" id="lbl-sfx-fist">Stop SFX</div><div class="g-sub">Fist</div></div></div>
           </div>
           <div class="leg-note">
             <span>Left hand</span> → Volume<br>
-            Drop right hand → Lock vol 🔒<br>
-            <span>👍👍</span> both → SFX layer<br>
-            <span>👎👎</span> both → Ambience<br>
-            Press <span>M</span> to flip
+            <span>👍👍</span> → SFX · <span>M</span> flip
           </div>
         </div>
       </div>
 
-      <div id="layer-pill" data-layer="ambience">
-        <div id="layer-pill-label">LAYER</div>
-        <div id="layer-pill-name">Ambience</div>
-        <div id="layer-pill-hint">▲ Both 👍 → SFX</div>
-      </div>
+      <!-- 3. CUSTOM button (底部) -->
+      <button id="custom-open-btn" onclick="openCustomPanel()">✦ Custom Mapping</button>
 
     </div>
 
@@ -686,6 +915,39 @@
   </div>
 </div>
 
+<!-- CUSTOM MAPPING PANEL -->
+<div id="custom-overlay" onclick="handleCustomOverlayClick(event)">
+  <div class="custom-box">
+    <p class="custom-box-title">✦ Custom Gesture Mapping</p>
+
+    <input
+      type="text"
+      id="custom-search"
+      placeholder="Search sounds…"
+      oninput="onCustomSearch(this.value)"
+      autocomplete="off"
+    />
+
+    <div id="custom-results">
+      <div id="custom-empty">Type to search for sounds</div>
+    </div>
+
+    <div class="custom-section-label">Assign to gesture (Ambience layer)</div>
+    <div id="custom-gesture-btns">
+      <button class="gesture-pick-btn" data-gesture="index_up" onclick="pickGesture('index_up')">☝️<span>Index</span></button>
+      <button class="gesture-pick-btn" data-gesture="peace"    onclick="pickGesture('peace')"   >✌️<span>Peace</span></button>
+      <button class="gesture-pick-btn" data-gesture="three"    onclick="pickGesture('three')"   >🤟<span>Three</span></button>
+      <button class="gesture-pick-btn" data-gesture="pinky"    onclick="pickGesture('pinky')"   >🤙<span>Pinky</span></button>
+      <button class="gesture-pick-btn" data-gesture="fist"     onclick="pickGesture('fist')"    >✊<span>Fist</span></button>
+    </div>
+
+    <div id="custom-actions">
+      <button id="custom-cancel-btn" onclick="closeCustomPanel()">Cancel</button>
+      <button id="custom-save-btn"   onclick="saveCustomMapping()" disabled>Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- LOADER -->
 <div id="loader">
   <div class="spinner"></div>
@@ -733,6 +995,444 @@ let lastTriggeredSFX = null;
 const STABLE_FRAMES = 3;
 
 // ─────────────────────────────
+//  CUSTOM MAPPING
+// ─────────────────────────────
+// customGestureMap 覆盖 ambience 层的默认映射
+// { gesture_key: { label: string, audio: Audio } }
+let customGestureMap = {}; // ambience layer custom mappings
+let customSFXMap = {};      // sfx layer custom mappings
+
+// 声音库 —— 使用 Audio Database 文件夹内的真实音效
+// 确保解压后的 "Audio Database" 文件夹与 index.html 在同一目录
+const SOUND_LIBRARY = [
+  // Wind
+  { id:"wind_soft",     category:"wind",    layer:"ambience", label:"Soft Wind",        url:"Audio Database/Ambience/Wind/softwind.mp3" },
+  { id:"wind_main",     category:"wind",    layer:"ambience", label:"Wind",             url:"Audio Database/Ambience/Wind/wind.mp3" },
+  { id:"wind_strange",  category:"wind",    layer:"ambience", label:"Strange Wind",     url:"Audio Database/Ambience/Wind/strangewind.mp3" },
+  { id:"wind_chimes",   category:"wind",    layer:"ambience", label:"Wind Chimes",      url:"Audio Database/Ambience/Wind/windchimes.mp3" },
+  { id:"wind_forest",   category:"wind",    layer:"ambience", label:"Forest Wind",      url:"Audio Database/Ambience/Wind/forestwind.mp3" },
+  // Rain
+  { id:"rain_1",        category:"rain",    layer:"ambience", label:"Rain",             url:"Audio Database/Ambience/Rain/rain.mp3" },
+  { id:"rain_2",        category:"rain",    layer:"ambience", label:"Rain 2",           url:"Audio Database/Ambience/Rain/rain 2.mp3" },
+  { id:"rain_3",        category:"rain",    layer:"ambience", label:"Rain 3",           url:"Audio Database/Ambience/Rain/rain 3.mp3" },
+  // Thunder
+  { id:"thunder_1",     category:"thunder", layer:"ambience", label:"Thunderstorm",     url:"Audio Database/Ambience/Thunder/thunderstorm.mp3" },
+  { id:"thunder_2",     category:"thunder", layer:"ambience", label:"Thunderstorm 2",   url:"Audio Database/Ambience/Thunder/thunderstorm 2.mp3" },
+  { id:"thunder_3",     category:"thunder", layer:"ambience", label:"Thunderstorm 3",   url:"Audio Database/Ambience/Thunder/thunderstorm 3.mp3" },
+  // Storm
+  { id:"storm_1",       category:"storm",   layer:"ambience", label:"Storm 1",          url:"Audio Database/Ambience/Storm/Storm 1.mp3" },
+  { id:"storm_2",       category:"storm",   layer:"ambience", label:"Storm 2",          url:"Audio Database/Ambience/Storm/Storm 2.mp3" },
+  { id:"storm_3",       category:"storm",   layer:"ambience", label:"Storm 3",          url:"Audio Database/Ambience/Storm/Storm 3.mp3" },
+  // City
+  { id:"city_1",        category:"city",    layer:"ambience", label:"City 1",           url:"Audio Database/Ambience/City/City 1.mp3" },
+  { id:"city_2",        category:"city",    layer:"ambience", label:"City 2",           url:"Audio Database/Ambience/City/City 2.mp3" },
+  { id:"city_3",        category:"city",    layer:"ambience", label:"City 3",           url:"Audio Database/Ambience/City/City 3.mp3" },
+  { id:"city_4",        category:"city",    layer:"ambience", label:"City 4",           url:"Audio Database/Ambience/City/City 4.mp3" },
+  { id:"city_train",    category:"city",    layer:"ambience", label:"Train Ride",       url:"Audio Database/Ambience/City/trainride.mp3" },
+  // Music
+  { id:"guitar_1",      category:"music",   layer:"ambience", label:"Guitar 1",         url:"Audio Database/Ambience/Music/Guitar 1.mp3" },
+  { id:"guitar_2",      category:"music",   layer:"ambience", label:"Guitar 2",         url:"Audio Database/Ambience/Music/Guitar 2.mp3" },
+  { id:"guitar_3",      category:"music",   layer:"ambience", label:"Guitar 3",         url:"Audio Database/Ambience/Music/Guitar 3.mp3" },
+  { id:"guitar_4",      category:"music",   layer:"ambience", label:"Guitar 4",         url:"Audio Database/Ambience/Music/Guitar 4.mp3" },
+  { id:"guitar_5",      category:"music",   layer:"ambience", label:"Guitar 5",         url:"Audio Database/Ambience/Music/Guitar 5.mp3" },
+  { id:"piano_1",       category:"music",   layer:"ambience", label:"Piano 1",          url:"Audio Database/Ambience/Music/Piano 1.mp3" },
+  { id:"piano_2",       category:"music",   layer:"ambience", label:"Piano 2",          url:"Audio Database/Ambience/Music/Piano 2.mp3" },
+  { id:"perc_1",        category:"music",   layer:"ambience", label:"Percussion 1",     url:"Audio Database/Ambience/Music/Precussion 1.mp3" },
+  { id:"perc_2",        category:"music",   layer:"ambience", label:"Percussion 2",     url:"Audio Database/Ambience/Music/Precussion 2.mp3" },
+  { id:"perc_3",        category:"music",   layer:"ambience", label:"Percussion 3",     url:"Audio Database/Ambience/Music/Precussion 3.mp3" },
+  { id:"perc_4",        category:"music",   layer:"ambience", label:"Percussion 4",     url:"Audio Database/Ambience/Music/Precussion 4.mp3" },
+  // Sound Effects
+  { id:"sfx_dog",       category:"sfx",     layer:"sfx",      label:"Dog Barks",        url:"Audio Database/Sound Effect/dogbarks.mp3" },
+  { id:"sfx_church",    category:"sfx",     layer:"sfx",      label:"Church Bell",      url:"Audio Database/Sound Effect/churchbell.mp3" },
+  { id:"sfx_lion",      category:"sfx",     layer:"sfx",      label:"Lion Roar",        url:"Audio Database/Sound Effect/lionroar.mp3" },
+  { id:"sfx_crash",     category:"sfx",     layer:"sfx",      label:"Car Crash",        url:"Audio Database/Sound Effect/carcrash.mp3" },
+  { id:"sfx_sword",     category:"sfx",     layer:"sfx",      label:"Sword Fight",      url:"Audio Database/Sound Effect/swordfight.mp3" },
+  { id:"sfx_tree",      category:"sfx",     layer:"sfx",      label:"Falling Tree",     url:"Audio Database/Sound Effect/fallingtree.mp3" },
+  { id:"sfx_alarm",     category:"sfx",     layer:"sfx",      label:"Alarm",            url:"Audio Database/Sound Effect/alarm.mp3" },
+  { id:"sfx_explosion", category:"sfx",     layer:"sfx",      label:"Explosion",        url:"Audio Database/Sound Effect/cinematicexplosion.mp3" },
+  { id:"sfx_whoosh",    category:"sfx",     layer:"sfx",      label:"Cinematic Whoosh", url:"Audio Database/Sound Effect/whooshcinematic.mp3" },
+  { id:"sfx_riser",     category:"sfx",     layer:"sfx",      label:"Cinematic Riser",  url:"Audio Database/Sound Effect/cinematicriser.mp3" },
+  { id:"sfx_cloth",     category:"sfx",     layer:"sfx",      label:"Cloth Rustle",     url:"Audio Database/Sound Effect/clothrustle.MP3" },
+  { id:"sfx_coin",      category:"sfx",     layer:"sfx",      label:"Coin Collision",   url:"Audio Database/Sound Effect/coincollision.mp3" },
+  { id:"sfx_click",     category:"sfx",     layer:"sfx",      label:"Mouse Click",      url:"Audio Database/Sound Effect/mouseclick.mp3" },
+  { id:"sfx_notif",     category:"sfx",     layer:"sfx",      label:"Notification",     url:"Audio Database/Sound Effect/notification.mp3" },
+  { id:"sfx_good",      category:"sfx",     layer:"sfx",      label:"Good Result",      url:"Audio Database/Sound Effect/goodresult.mp3" },
+  { id:"sfx_error",     category:"sfx",     layer:"sfx",      label:"Error",            url:"Audio Database/Sound Effect/error.mp3" },
+  { id:"sfx_apple",     category:"sfx",     layer:"sfx",      label:"Apple Pay",        url:"Audio Database/Sound Effect/applepaysuccess.mp3" },
+  { id:"sfx_swipe",     category:"sfx",     layer:"sfx",      label:"Quick Swipe",      url:"Audio Database/Sound Effect/quickswipe.mp3" },
+  { id:"sfx_scifi",     category:"sfx",     layer:"sfx",      label:"Sci-Fi Sensors",   url:"Audio Database/Sound Effect/scifisensors.mp3" },
+  { id:"sfx_drama",     category:"sfx",     layer:"sfx",      label:"Dramatic Riser",   url:"Audio Database/Sound Effect/dramaticriser2.mp3" },
+];
+
+let customSelectedSound   = null; // SOUND_LIBRARY 中当前选中的条目
+let customSelectedGesture = null; // 当前选中的手势 key
+let previewAudio          = null; // 正在预览的 Audio 对象
+
+// Ambience layer 的可自定义手势
+const AMBIENCE_GESTURES = ["index_up","peace","three","pinky","fist"];
+// SFX layer 的可自定义手势
+const SFX_GESTURES      = ["ok","index_up","peace","three","fist"];
+
+window.openCustomPanel = function() {
+  customSelectedSound   = null;
+  customSelectedGesture = null;
+  document.getElementById("custom-search").value = "";
+  document.getElementById("custom-save-btn").disabled = true;
+  stopPreview();
+
+  // 根据当前 layer 决定手势按钮和标题
+  const isAmbience = currentLayer === "ambience";
+  const allowedGestures = isAmbience ? AMBIENCE_GESTURES : SFX_GESTURES;
+
+  // 更新 placeholder
+  const searchEl = document.getElementById("custom-search");
+  searchEl.placeholder = isAmbience
+    ? "Search: wind, rain, guitar, city…"
+    : "Search: dog, explosion, alarm, coin…";
+
+  document.querySelector(".custom-section-label").textContent =
+    isAmbience ? "Assign to gesture (Ambience layer)" : "Assign to gesture (SFX layer)";
+
+  const title = document.querySelector(".custom-box-title");
+  title.style.color = isAmbience ? "rgba(130,255,160,0.85)" : "rgba(255,107,157,0.85)";
+
+  // 默认展示当前层所有声音（分组）
+  renderDefaultSounds();
+
+  const GESTURE_DEFS = {
+    index_up: { emoji:"☝️", name:"Index" },
+    peace:    { emoji:"✌️", name:"Peace" },
+    three:    { emoji:"🤟", name:"Three" },
+    pinky:    { emoji:"🤙", name:"Pinky" },
+    fist:     { emoji:"✊", name:"Fist"  },
+    ok:       { emoji:"👌", name:"OK"    },
+  };
+  const btnsEl = document.getElementById("custom-gesture-btns");
+  btnsEl.innerHTML = allowedGestures.map(g => {
+    const d = GESTURE_DEFS[g];
+    return `<button class="gesture-pick-btn" data-gesture="${g}" onclick="pickGesture(\'${g}\')">​${d.emoji}<span>${d.name}</span></button>`;
+  }).join("");
+
+  document.getElementById("custom-overlay").classList.add("show");
+};
+
+window.closeCustomPanel = function() {
+  stopPreview();
+  document.getElementById("custom-overlay").classList.remove("show");
+};
+
+window.handleCustomOverlayClick = function(e) {
+  if (e.target.id === "custom-overlay") closeCustomPanel();
+};
+
+// 按 category 分组渲染当前层全部声音
+function renderDefaultSounds() {
+  const el = document.getElementById("custom-results");
+  const sounds = SOUND_LIBRARY.filter(s => s.layer === currentLayer);
+  const groups = {};
+  for (const s of sounds) {
+    if (!groups[s.category]) groups[s.category] = [];
+    groups[s.category].push(s);
+  }
+  let html = "";
+  for (const [cat, items] of Object.entries(groups)) {
+    html += `<div class="sound-group-label">${cat}</div>`;
+    html += items.map(s => `
+      <div class="sound-result-item" id="sri-${s.id}" onclick="selectSound('${s.id}')">
+        <div>
+          <div class="sound-result-label">${s.label}</div>
+          <div class="sound-result-sub">${s.category}</div>
+        </div>
+        <button class="sound-preview-btn" id="prev-${s.id}"
+          onclick="event.stopPropagation();togglePreview('${s.id}','${s.url}')">▶</button>
+      </div>
+    `).join("");
+  }
+  el.innerHTML = html;
+  // 恢复之前已选中的高亮
+  if (customSelectedSound) {
+    document.getElementById("sri-" + customSelectedSound.id)?.classList.add("selected");
+  }
+}
+
+window.onCustomSearch = function(query) {
+  stopPreview();
+  const q = query.trim().toLowerCase();
+  const el = document.getElementById("custom-results");
+
+  if (!q) {
+    renderDefaultSounds();
+    return;
+  }
+
+  const hits = SOUND_LIBRARY
+    .filter(s => s.layer === currentLayer)
+    .filter(s => s.label.toLowerCase().includes(q) || s.category.toLowerCase().includes(q))
+    .slice(0, 5);
+
+  if (!hits.length) {
+    el.innerHTML = `<div id="custom-empty">No sounds found for "${query}"</div>`;
+    return;
+  }
+
+  el.innerHTML = hits.map(s => `
+    <div class="sound-result-item" id="sri-${s.id}" onclick="selectSound('${s.id}')">
+      <div>
+        <div class="sound-result-label">${s.label}</div>
+        <div class="sound-result-sub">${s.category}</div>
+      </div>
+      <button class="sound-preview-btn" id="prev-${s.id}"
+        onclick="event.stopPropagation();togglePreview('${s.id}','${s.url}')">▶</button>
+    </div>
+  `).join("");
+};
+
+window.selectSound = function(id) {
+  customSelectedSound = SOUND_LIBRARY.find(s => s.id === id) || null;
+  document.querySelectorAll(".sound-result-item").forEach(el => el.classList.remove("selected"));
+  document.getElementById("sri-" + id)?.classList.add("selected");
+  checkSaveReady();
+};
+
+window.togglePreview = function(id, url) {
+  const wasThisOne = previewAudio && previewAudio._id === id && !previewAudio.paused;
+  stopPreview();
+  if (wasThisOne) return; // 再次点击 → 关闭预览
+  const a = new Audio(url);
+  a._id = id;
+  a.volume = 0.45;
+  a.play().catch(() => {});
+  a.onended = stopPreview;
+  previewAudio = a;
+  const btn = document.getElementById("prev-" + id);
+  if (btn) { btn.textContent = "■"; btn.classList.add("playing"); }
+};
+
+function stopPreview() {
+  if (previewAudio) {
+    previewAudio.pause();
+    previewAudio.currentTime = 0;
+    previewAudio = null;
+  }
+  document.querySelectorAll(".sound-preview-btn").forEach(b => {
+    b.textContent = "▶"; b.classList.remove("playing");
+  });
+}
+
+window.pickGesture = function(g) {
+  customSelectedGesture = g;
+  document.querySelectorAll(".gesture-pick-btn").forEach(b => b.classList.remove("selected"));
+  document.querySelector(`.gesture-pick-btn[data-gesture="${g}"]`)?.classList.add("selected");
+  checkSaveReady();
+};
+
+function checkSaveReady() {
+  document.getElementById("custom-save-btn").disabled =
+    !(customSelectedSound && customSelectedGesture);
+}
+
+// ── localStorage 持久化 ──────────────────────────────
+// 只存 { gesture: { label, url } }，不存 Audio 对象
+const LS_KEY = "koji_custom_map_v1";
+
+function persistCustomMap() {
+  const slimAmb = {};
+  for (const [g, v] of Object.entries(customGestureMap)) {
+    slimAmb[g] = { label: v.label, url: v.url };
+  }
+  const slimSFX = {};
+  for (const [g, v] of Object.entries(customSFXMap)) {
+    slimSFX[g] = { label: v.label, url: v.url };
+  }
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(slimAmb));
+    localStorage.setItem(LS_KEY + "_sfx", JSON.stringify(slimSFX));
+  } catch(e) {}
+}
+
+// 从 SOUND_LIBRARY 里找到对应 url 的条目并返回（已缓存的）audio 对象
+// 避免 loadPersistedMap 里重复 new Audio() 导致的各种浏览器问题
+function getOrCreateAudio(url, loop) {
+  const entry = SOUND_LIBRARY.find(s => s.url === url);
+  if (entry) {
+    if (!entry._audio) {
+      entry._audio = new Audio(url);
+      entry._audio.loop = loop;
+      entry._audio.volume = smoothedVolume;
+      entry._audio.load();
+    }
+    entry._audio.loop = loop;
+    return entry._audio;
+  }
+  // fallback: url 不在库里则直接创建
+  const a = new Audio(url);
+  a.loop = loop;
+  a.volume = smoothedVolume;
+  a.load();
+  return a;
+}
+
+function loadPersistedMap() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const slim = JSON.parse(raw);
+      for (const [g, v] of Object.entries(slim)) {
+        const audio = getOrCreateAudio(v.url, true);
+        customGestureMap[g] = { label: v.label, url: v.url, audio };
+        applyLabelToPanel(g, v.label);
+      }
+    }
+  } catch(e) {}
+  try {
+    const rawSFX = localStorage.getItem(LS_KEY + "_sfx");
+    if (rawSFX) {
+      const slim = JSON.parse(rawSFX);
+      for (const [g, v] of Object.entries(slim)) {
+        const audio = getOrCreateAudio(v.url, false);
+        customSFXMap[g] = { label: v.label, url: v.url, audio };
+        applyLabelToSFXPanel(g, v.label);
+      }
+    }
+  } catch(e) {}
+}
+
+// ── 更新右侧面板标签 + 显示重置按钮 ────────────────────
+function applyLabelToPanel(gestureKey, label) {
+  const lblEl = document.getElementById("lbl-" + gestureKey);
+  if (!lblEl) return;
+  lblEl.textContent = label;
+  lblEl.style.color = "rgba(130,255,160,0.88)";
+
+  // 在同一 g-row 里加（或更新）一个重置按钮
+  const row = lblEl.closest(".g-row");
+  if (!row) return;
+  let resetBtn = row.querySelector(".g-reset-btn");
+  if (!resetBtn) {
+    resetBtn = document.createElement("button");
+    resetBtn.className = "g-reset-btn";
+    resetBtn.title = "Reset to default";
+    resetBtn.textContent = "↺";
+    resetBtn.addEventListener("click", () => resetGestureMapping(gestureKey));
+    row.appendChild(resetBtn);
+  }
+}
+
+// ── 更新 SFX 右侧面板标签 ────────────────────────────
+function applyLabelToSFXPanel(gestureKey, label) {
+  const lblEl = document.getElementById("lbl-sfx-" + gestureKey);
+  if (!lblEl) return;
+  lblEl.textContent = label;
+  lblEl.style.color = "rgba(255,107,157,0.88)";
+  const row = lblEl.closest(".g-row");
+  if (!row) return;
+  let resetBtn = row.querySelector(".g-reset-btn");
+  if (!resetBtn) {
+    resetBtn = document.createElement("button");
+    resetBtn.className = "g-reset-btn";
+    resetBtn.title = "Reset to default";
+    resetBtn.textContent = "↺";
+    resetBtn.addEventListener("click", () => resetSFXMapping(gestureKey));
+    row.appendChild(resetBtn);
+  }
+}
+
+function resetSFXMapping(gestureKey) {
+  delete customSFXMap[gestureKey];
+  persistCustomMap();
+  const defaults = { ok:"Dog", index_up:"Guzhen", peace:"Footsteps", three:"Door knock", fist:"Stop SFX" };
+  const lblEl = document.getElementById("lbl-sfx-" + gestureKey);
+  if (lblEl) {
+    lblEl.textContent = defaults[gestureKey] || gestureKey;
+    lblEl.style.color = "";
+  }
+  const row = lblEl?.closest(".g-row");
+  row?.querySelector(".g-reset-btn")?.remove();
+  showToast(`${defaults[gestureKey] || gestureKey} restored`);
+}
+
+function resetGestureMapping(gesture) {
+  // 停止正在播放的自定义音效
+  if (currentAmbience && customGestureMap[gesture] && currentAmbience === customGestureMap[gesture].audio) {
+    stopAmbience();
+  }
+  delete customGestureMap[gesture];
+  persistCustomMap();
+
+  // 恢复默认标签文字和颜色
+  const defaults = { index_up:"Wind", peace:"Rain", three:"Thunder", pinky:"Birds", fist:"Silence" };
+  const lblEl = document.getElementById("lbl-" + gesture);
+  if (lblEl) {
+    lblEl.textContent = defaults[gesture] || gesture;
+    lblEl.style.color = "";
+  }
+  // 移除重置按钮
+  const row = lblEl?.closest(".g-row");
+  row?.querySelector(".g-reset-btn")?.remove();
+
+  showToast(`${defaults[gesture] || gesture} restored`);
+}
+
+// ── Toast 提示 ───────────────────────────────────────
+function showToast(msg) {
+  let t = document.getElementById("koji-toast");
+  if (!t) {
+    t = document.createElement("div");
+    t.id = "koji-toast";
+    t.style.cssText = `
+      position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(12px);
+      background:rgba(13,13,23,0.97); border:1px solid rgba(130,255,160,0.35);
+      color:rgba(130,255,160,0.9); font-family:var(--font); font-size:11px;
+      letter-spacing:0.1em; padding:10px 22px; border-radius:8px;
+      opacity:0; transition:opacity 0.22s, transform 0.22s;
+      pointer-events:none; z-index:200; white-space:nowrap;
+    `;
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = "1";
+  t.style.transform = "translateX(-50%) translateY(0)";
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => {
+    t.style.opacity = "0";
+    t.style.transform = "translateX(-50%) translateY(12px)";
+  }, 2200);
+}
+
+// ── Save ─────────────────────────────────────────────
+window.saveCustomMapping = function() {
+  if (!customSelectedSound || !customSelectedGesture) return;
+  stopPreview();
+
+  if (currentLayer === "ambience") {
+    // 停掉旧的自定义音效（如果正在播）
+    if (customGestureMap[customSelectedGesture]?.audio === currentAmbience) {
+      stopAmbience();
+    }
+    const audio = getOrCreateAudio(customSelectedSound.url, true);
+    customGestureMap[customSelectedGesture] = {
+      label: customSelectedSound.label,
+      url:   customSelectedSound.url,
+      audio
+    };
+    applyLabelToPanel(customSelectedGesture, customSelectedSound.label);
+  } else {
+    // SFX layer
+    const audio = getOrCreateAudio(customSelectedSound.url, false);
+    customSFXMap[customSelectedGesture] = {
+      label: customSelectedSound.label,
+      url:   customSelectedSound.url,
+      audio
+    };
+    applyLabelToSFXPanel(customSelectedGesture, customSelectedSound.label);
+  }
+
+  persistCustomMap();
+  showToast(`✦ Saved — ${customSelectedSound.label}`);
+  closeCustomPanel();
+};
+
+// ─────────────────────────────
 //  INTRO / TUTORIAL
 // ─────────────────────────────
 window.handleStart = async function() {
@@ -777,6 +1477,8 @@ function setupAudio() {
   for (const s of [dogSound, doorSound, footstepsSound, guzhenSound]) {
     s.loop = false; s.volume = 0.9;
   }
+  // 在 setupAudio 里加载持久化映射，确保 Audio 对象在用户交互后创建
+  loadPersistedMap();
 }
 
 function playAmbience(s) {
@@ -805,6 +1507,10 @@ function playSFX(s) {
 function stopAllSFX() {
   for (const s of [dogSound, doorSound, footstepsSound, guzhenSound]) {
     if (s) { s.pause(); s.currentTime = 0; }
+  }
+  // 同时停掉所有自定义 SFX 音频
+  for (const v of Object.values(customSFXMap)) {
+    if (v.audio) { v.audio.pause(); v.audio.currentTime = 0; }
   }
   lastSFXPlaying = null;
 }
@@ -839,7 +1545,7 @@ function computeVolumeFromWristY(wristY) {
 }
 
 // ─────────────────────────────
-//  THREE.JS  (preserved from friend's design)
+//  THREE.JS
 // ─────────────────────────────
 const threeCanvas = document.getElementById("three-canvas");
 const renderer = new THREE.WebGLRenderer({ canvas: threeCanvas, antialias: true, alpha: true });
@@ -1024,11 +1730,18 @@ function checkLayerSwitch(soundHand, volumeHand) {
     currentLayer = "sfx";
     lastLayerSwitchTime = now;
     lastTriggeredSFX = null;
+    // 切到 SFX 层时停止所有 ambience 音效并重置状态
+    stopAmbience();
+    isVolumeLocked = false;
+    lockedGesture = null;
+    activeSoundGesture = null;
     updateLayerUI();
   } else if (dirA === "down" && dirB === "down" && currentLayer === "sfx") {
     currentLayer = "ambience";
     lastLayerSwitchTime = now;
     lastTriggeredSFX = null;
+    // 切回 Ambience 层时停止所有 SFX 音效
+    stopAllSFX();
     updateLayerUI();
   }
 }
@@ -1043,19 +1756,22 @@ function getStableGesture(currentGesture) {
   return soundGestureFrameCount >= STABLE_FRAMES ? currentGesture : null;
 }
 
+// 自定义映射优先，fallback 到默认
 function getAmbienceForGesture(g) {
+  if (customGestureMap[g]) return customGestureMap[g].audio;
   if (g === "index_up") return windSound;
-  if (g === "peace") return rainSound;
-  if (g === "three") return thunderSound;
-  if (g === "pinky") return birdSound;
+  if (g === "peace")    return rainSound;
+  if (g === "three")    return thunderSound;
+  if (g === "pinky")    return birdSound;
   return null;
 }
 
 function getAmbienceLabel(g) {
+  if (customGestureMap[g]) return customGestureMap[g].label;
   if (g === "index_up") return "Wind howling";
-  if (g === "peace") return "Rain falling";
-  if (g === "three") return "Thunderstorm";
-  if (g === "pinky") return "Birds singing";
+  if (g === "peace")    return "Rain falling";
+  if (g === "three")    return "Thunderstorm";
+  if (g === "pinky")    return "Birds singing";
   return "(hold still)";
 }
 
@@ -1141,12 +1857,17 @@ function detectLoop() {
     } else {
       // SFX layer: press-to-trigger mode
       if (isVolumeLocked) { isVolumeLocked = false; lockedGesture = null; }
-      const sfxMap = {
+      const sfxDefaults = {
         "ok":       { sound: dogSound,       label: "Dog barks" },
         "index_up": { sound: guzhenSound,    label: "Guzhen" },
         "peace":    { sound: footstepsSound, label: "Footsteps" },
         "three":    { sound: doorSound,      label: "Door knock" }
       };
+      // customSFXMap 覆盖默认 SFX 映射
+      const sfxMap = { ...sfxDefaults };
+      for (const [g, v] of Object.entries(customSFXMap)) {
+        sfxMap[g] = { sound: v.audio, label: v.label };
+      }
 
       if (stableGesture === "fist") {
         statusText = "SFX silenced";
